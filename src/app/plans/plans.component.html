@@ -1,0 +1,28 @@
+<button mat-fab color="accent" class="fab" (click)="openNewPlanForm()">
+    <mat-icon>add</mat-icon>
+</button>
+
+<mat-action-list>
+    <div mat-subheader>Active</div>
+    <mat-list-item (click)="onPlanSelect()">
+        <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
+        <div matListItemTitle>April</div>
+        <div matListItemLine>01.04.2023 - 30.04.2023</div>
+    </mat-list-item>
+    <div mat-subheader>Archived</div>
+    <mat-list-item (click)="onPlanSelect()">
+        <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
+        <div matListItemTitle>March</div>
+        <div matListItemLine>01.03.2023 - 31.03.2023</div>
+    </mat-list-item>
+    <mat-list-item (click)="onPlanSelect()">
+        <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
+        <div matListItemTitle>February</div>
+        <div matListItemLine>01.02.2023 - 28.02.2023</div>
+    </mat-list-item>
+    <mat-list-item (click)="onPlanSelect()">
+        <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
+        <div matListItemTitle>January</div>
+        <div matListItemLine>01.01.2023 - 31.01.2023</div>
+    </mat-list-item>
+</mat-action-list>

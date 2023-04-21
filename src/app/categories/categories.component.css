@@ -1,0 +1,8 @@
+.element-editor {
+    display: flex;
+    justify-content: space-between;
+}
+
+.element-editor .actions {
+    align-self: center;
+}

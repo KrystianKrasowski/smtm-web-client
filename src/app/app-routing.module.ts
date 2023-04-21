@@ -1,7 +1,24 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CategoriesComponent } from './categories/categories.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { PlansComponent } from './plans/plans.component';
+import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: '',
+    component: DashboardComponent
+  },
+  {
+    path: 'categories',
+    component: CategoriesComponent
+  },
+  {
+    path: 'plans',
+    component: PlansComponent
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -1,0 +1,24 @@
+<div class="element-editor">
+    <div class="input">
+        <form>
+            <mat-form-field>
+                <mat-label>Category</mat-label>
+                <input matInput type="text" [formControl]="name">
+                <mat-error *ngIf="name.hasError('name')">{{name.getError('name')}}</mat-error>
+            </mat-form-field>
+        </form>
+    </div>
+    <div class="actions">
+        <button *ngIf="isCategorySelected()" mat-button color="warn" (click)="onCategoryDelete()">Delete</button>
+        <button mat-button (click)="onCategorySave()">Save</button>
+    </div>
+</div>
+
+<mat-action-list>
+    <button *ngFor="let category of categoryList | async" 
+            mat-list-item [activated]="category == selectedCategory" 
+            (click)="onCategoryTap(category)">
+        <mat-icon matListItemIcon>folder</mat-icon>
+        {{category.name}}
+    </button>
+</mat-action-list>
