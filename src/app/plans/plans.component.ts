@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Category } from '../api/categories.api';
 import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
 
 @Component({
@@ -9,7 +10,7 @@ import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
 })
 export class PlansComponent {
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog) { }
 
   onPlanSelect() {
     console.log('Plan selected!')
@@ -17,8 +18,7 @@ export class PlansComponent {
 
   openNewPlanForm() {
     this.dialog.open(NewPlanFormComponent, {
-      height: '600px',
-      width: '800px'
+      width: '1000px'
     })
   }
 }

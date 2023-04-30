@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApiModule } from './api/api.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -44,7 +45,8 @@ import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.compon
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

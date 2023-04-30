@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { CategoriesComponent } from './categories/categories.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PlansComponent } from './plans/plans.component';
-import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.component';
 
 const routes: Routes = [
   {
