@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { Category } from '../api/categories.api';
-import { ConstraintViolationsProblem } from '../api/problem';
+import { ConstraintViolationsProblem, isConstraintViolation } from '../api/problem';
 import { CategoriesService } from '../categories.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
@@ -55,7 +55,7 @@ export class CategoriesComponent {
   private handleSaveResult(result: Category | ConstraintViolationsProblem) {
     if (isConstraintViolation(result)) {
       this.name.setErrors({
-        name: result.violations.find((v) => v.subject === 'name')?.message
+        name: result.violations.find((v) => v.path === 'name')?.message
       })
     }
   }
@@ -71,8 +71,4 @@ export class CategoriesComponent {
         })
     }
   }
-}
-
-function isConstraintViolation(object: Category | ConstraintViolationsProblem): object is ConstraintViolationsProblem {
-  return "violations" in object
 }

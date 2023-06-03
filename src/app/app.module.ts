@@ -12,6 +12,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApiModule } from './api/api.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -21,6 +22,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PlansComponent } from './plans/plans.component';
 import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,9 @@ import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.compon
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [],
   bootstrap: [AppComponent]

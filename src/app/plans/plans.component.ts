@@ -17,8 +17,11 @@ export class PlansComponent {
   }
 
   openNewPlanForm() {
-    this.dialog.open(NewPlanFormComponent, {
-      width: '1000px'
-    })
+    this.dialog
+      .open(NewPlanFormComponent, {
+        width: '1000px'
+      })
+      .afterClosed()
+      .subscribe(result => console.log(result))
   }
 }
