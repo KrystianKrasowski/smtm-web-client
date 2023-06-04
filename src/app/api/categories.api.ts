@@ -4,6 +4,7 @@ import { HalCollection, HalResource } from "./hal-resource";
 import { ConstraintViolationsProblem } from "./problem";
 import { RootApi } from "./root.api";
 import { Injectable } from "@angular/core";
+import { VERSION_1_JSON } from "./media-types";
 
 type CategoryListResponse = HalCollection<Category>;
 
@@ -17,7 +18,7 @@ export class CategoriesApi {
     getAll(): Observable<Category[]> {
         const options = {
             'headers': {
-                'Accept': 'application/smtm.category-list.v1+json'
+                'Accept': VERSION_1_JSON
             }
         }
         return this.rootApi.getUrlFor('categories')
@@ -30,8 +31,8 @@ export class CategoriesApi {
     post(category: NewCategory): Observable<Category | ConstraintViolationsProblem> {
         const options = {
             'headers': {
-                'Content-Type': 'application/smtm.new-category.v1+json',
-                'Accept': 'application/smtm.category.v1+json'
+                'Content-Type': VERSION_1_JSON,
+                'Accept': VERSION_1_JSON
             }
         }
     
@@ -45,7 +46,7 @@ export class CategoriesApi {
     put(category: Category): Observable<Category | ConstraintViolationsProblem> {
         const options = {
             'headers': {
-                'Content-Type': 'application/smtm.category.v1+json'
+                'Content-Type': VERSION_1_JSON
             }
         }
 
@@ -58,7 +59,7 @@ export class CategoriesApi {
     delete(category: Category): Observable<void> {
         const options = {
             'headers': {
-                'Content-Type': 'application/smtm.category.v1+json'
+                'Content-Type': VERSION_1_JSON
             }
         }
         

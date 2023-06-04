@@ -1,10 +1,14 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
+import { Observable, catchError, map, mergeMap, of } from "rxjs";
 import { Money } from "ts-money";
-import { HalResource } from "./hal-resource";
-import { ConstraintViolationsProblem } from "./problem";
+import { HalCollection, HalResource } from "./hal-resource";
+import { ApiProblem, ConstraintViolationsProblem, createConstraintViolationsProblem, createUndefinedApiProblem } from "./problem";
 import { RootApi } from "./root.api";
+import { VERSION_1_JSON } from "./media-types";
+import { Category } from "./categories.api";
+
+type PlanListResponse = HalCollection<PlanListEntry>
 
 @Injectable({
     providedIn: 'root'
@@ -13,63 +17,44 @@ export class PlansApi {
 
     constructor(private rootApi: RootApi, private http: HttpClient) {}
 
-    post(plan: NewPlanRequest): Observable<Plan | ConstraintViolationsProblem> {
-        const planResponse: Plan = {
-            _links: {
-                "self": {
-                    "href": "http://localhost:8080/plans/1"
-                }
-            },
-            id: 1,
-            name: "07 July",
-            period: {
-                start: new Date("2023-07-01"),
-                end: new Date("2023-07-31")
-            },
-            entries: [
-                {
-                    category: 1,
-                    value: Money.fromDecimal(313.59, "PLN")
-                }
-            ]
+    getAll(): Observable<PlanListEntry[]> {
+        const options = {
+            'headers': {
+                'Accept': VERSION_1_JSON
+            }
         }
-
-        const problemResponse: ConstraintViolationsProblem = {
-            title: "Constraint violations detected",
-            status: 422,
-            violations: [
-                {
-                    path: "$.name",
-                    code: "INVALID_CHARACTERS",
-                    message: "Contains invalid characters: <,>,#",
-                    parameters: {
-                      invalidChars: "<,>,#"
-                    }
-                  },
-                  {
-                    path: "$.period.start",
-                    code: "INVALID_DATE",
-                    message: "Invalid date"
-                  },
-                  {
-                    path: "$.period.end",
-                    code: "INVALID_DATE",
-                    message: "Invalid date"
-                  },
-                  {
-                    path: "$.entries[0].category",
-                    code: "UNKNOWN",
-                    message: "Does not exist"
-                  },
-                  {
-                    path: "$.entries[2].value",
-                    code: "NOT_A_NUMBER",
-                    message: "Invalid number"
-                  }
-            ]
-        }
-        return of(problemResponse)
+        return this.rootApi.getUrlFor("plans")
+            .pipe(
+                mergeMap(url => this.http.get<PlanListResponse>(url, options)),
+                map(response => response._embedded['plans'])
+            )
     }
+
+    post(plan: NewPlanRequest): Observable<Plan | ConstraintViolationsProblem | ApiProblem> {
+        const options = {
+            'headers': {
+                'Content-Type': VERSION_1_JSON,
+                'Accept': VERSION_1_JSON
+            }
+        }
+        return this.rootApi.getUrlFor('plans')
+            .pipe(
+                mergeMap(url => this.http.post<Plan>(url, plan, options)),
+                catchError(error => of(createConstraintViolationsProblem(error) ?? createUndefinedApiProblem(error)))
+            )
+    }
+}
+
+export type PlanStatus = 'FUTURE' | 'CURRENT' | 'PAST'
+
+export interface PlanListEntry extends HalResource {
+    id: number,
+    name: string,
+    period: {
+        start: Date,
+        end: Date
+    },
+    status: PlanStatus
 }
 
 export interface NewPlanRequest {
@@ -94,6 +79,6 @@ export interface Plan extends HalResource {
 
 export interface Entry {
 
-    category: number,
+    category: Category,
     value: Money
 }

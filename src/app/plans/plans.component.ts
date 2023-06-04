@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Category } from '../api/categories.api';
 import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
+import { PlanListEntry, PlansApi } from '../api/plans.api';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-plans',
@@ -10,7 +12,11 @@ import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
 })
 export class PlansComponent {
 
-  constructor(private dialog: MatDialog) { }
+  plansList: Observable<PlanListEntry[]>
+
+  constructor(private plansApi: PlansApi, private dialog: MatDialog) {
+    this.plansList = this.plansApi.getAll()
+  }
 
   onPlanSelect() {
     console.log('Plan selected!')

@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from "@angular/common/http"
 
 export interface ApiProblem {
-    title: string,
-    status: number
+    type: string,
+    title: string
 }
 
 export interface ConstraintViolationsProblem extends ApiProblem {
@@ -26,6 +26,17 @@ export function createConstraintViolationsProblem(response: HttpErrorResponse): 
     return undefined
 }
 
+export function createUndefinedApiProblem(response: HttpErrorResponse): ApiProblem {
+    return {
+        'type': 'https:/static.smtm.com/api-problems/general',
+        'title': response.error
+    }
+}
+
 export function isConstraintViolation(object: any | ConstraintViolationsProblem): object is ConstraintViolationsProblem {
     return "violations" in object
-  }
+}
+
+export function isApiProblem(object: any | ApiProblem): object is ApiProblem {
+    return 'title' in object && 'status' in object
+}

@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Category } from 'src/app/api/categories.api';
 import { NewPlanRequest, Plan, PlansApi } from 'src/app/api/plans.api';
-import { ConstraintViolation, ConstraintViolationsProblem, isConstraintViolation } from 'src/app/api/problem';
+import { ApiProblem, ConstraintViolation, ConstraintViolationsProblem, isApiProblem, isConstraintViolation } from 'src/app/api/problem';
 import { CategoriesService } from 'src/app/categories.service';
 import { Money } from 'ts-money';
 
@@ -152,11 +152,13 @@ export class NewPlanFormComponent implements OnInit {
     return request
   }
 
-  private handleSubmitResult(result: Plan | ConstraintViolationsProblem) {
+  private handleSubmitResult(result: Plan | ConstraintViolationsProblem | ApiProblem) {
     if (isConstraintViolation(result)) {
       result.violations.forEach(violation => this.applyError(violation))
+    } else if (isApiProblem(result)) {
+      this.dialogRef.close(false)
     } else {
-      this.close()
+      this.dialogRef.close(true)
     }
   }
 
