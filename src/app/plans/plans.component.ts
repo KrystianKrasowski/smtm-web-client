@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Category } from '../api/categories.api';
-import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
-import { PlanListEntry, PlansApi } from '../api/plans.api';
 import { Observable } from 'rxjs';
+import { PlanList, PlansApi } from '../api/plans.api';
+import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
 
 @Component({
   selector: 'app-plans',
@@ -12,10 +11,10 @@ import { Observable } from 'rxjs';
 })
 export class PlansComponent {
 
-  plansList: Observable<PlanListEntry[]>
+  plansList$: Observable<PlanList>
 
   constructor(private plansApi: PlansApi, private dialog: MatDialog) {
-    this.plansList = this.plansApi.getAll()
+    this.plansList$ = this.plansApi.getAll()
   }
 
   onPlanSelect() {

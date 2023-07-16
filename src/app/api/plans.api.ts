@@ -17,7 +17,7 @@ export class PlansApi {
 
     constructor(private rootApi: RootApi, private http: HttpClient) {}
 
-    getAll(): Observable<PlanListEntry[]> {
+    getAll(): Observable<PlanList> {
         const options = {
             'headers': {
                 'Accept': VERSION_1_JSON
@@ -26,7 +26,13 @@ export class PlansApi {
         return this.rootApi.getUrlFor("plans")
             .pipe(
                 mergeMap(url => this.http.get<PlanListResponse>(url, options)),
-                map(response => response._embedded['plans'])
+                map(response => {
+                    return {
+                        active: response._embedded['active'],
+                        future: response._embedded['future'],
+                        past: response._embedded['past']
+                    }
+                })
             )
     }
 
@@ -45,7 +51,11 @@ export class PlansApi {
     }
 }
 
-export type PlanStatus = 'FUTURE' | 'CURRENT' | 'PAST'
+export interface PlanList {
+    active: PlanListEntry[],
+    future: PlanListEntry[],
+    past: PlanListEntry[]
+}
 
 export interface PlanListEntry extends HalResource {
     id: number,
@@ -53,8 +63,7 @@ export interface PlanListEntry extends HalResource {
     period: {
         start: Date,
         end: Date
-    },
-    status: PlanStatus
+    }
 }
 
 export interface NewPlanRequest {

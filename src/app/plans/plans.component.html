@@ -2,11 +2,23 @@
     <mat-icon>add</mat-icon>
 </button>
 
-<mat-action-list>
+<mat-action-list *ngIf="plansList$ | async as list">
     <div mat-subheader>Active</div>
-    <mat-list-item *ngFor="let entry of plansList | async">
+    <mat-list-item *ngFor="let entry of list.active">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
-        <div matListItemLine>{{ entry.period.start }} - {{ entry.period. start }}</div>
+        <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
+    </mat-list-item>
+    <div mat-subheader>Future</div>
+    <mat-list-item *ngFor="let entry of list.future">
+        <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
+        <div matListItemTitle>{{ entry.name }}</div>
+        <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
+    </mat-list-item>
+    <div mat-subheader>Past</div>
+    <mat-list-item *ngFor="let entry of list.past">
+        <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
+        <div matListItemTitle>{{ entry.name }}</div>
+        <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
 </mat-action-list>
