@@ -2,21 +2,21 @@
     <mat-icon>add</mat-icon>
 </button>
 
-<mat-action-list *ngIf="plansList$ | async as list">
-    <div mat-subheader>Active</div>
-    <mat-list-item *ngFor="let entry of list.active">
+<mat-action-list>
+    <div mat-subheader>Current</div>
+    <mat-list-item *ngFor="let entry of currentPlans$ | async">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
-    <div mat-subheader>Future</div>
-    <mat-list-item *ngFor="let entry of list.future">
+    <div mat-subheader>Upcoming</div>
+    <mat-list-item *ngFor="let entry of upcomingPlans$ | async">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
-    <div mat-subheader>Past</div>
-    <mat-list-item *ngFor="let entry of list.past">
+    <div mat-subheader>Archived</div>
+    <mat-list-item *ngFor="let entry of archivedPlans$ | async">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>

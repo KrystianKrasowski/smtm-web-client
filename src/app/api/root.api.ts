@@ -4,8 +4,14 @@ import { HalCollection, HalResource } from "./hal-resource";
 import { Injectable } from "@angular/core";
 import { VERSION_1_JSON } from "./media-types";
 
-type RootResponse = HalCollection<HalResource>;
-type SmtmResourceName = 'categories' | 'wallets' | 'plans';
+type RootResponse = HalCollection<HalResource>
+
+export type SmtmResourceName = 'categories'
+    | 'wallets' 
+    | 'plans' 
+    | 'current-plan-definitions' 
+    | 'upcoming-plan-definitions' 
+    | 'archived-plan-definitions'
 
 @Injectable({
     providedIn: 'root'

@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { PlanList, PlansApi } from '../api/plans.api';
 import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
+import { PlanDefinition, PlanDefinitionsApi } from '../api/plan-definitions.api';
 
 @Component({
   selector: 'app-plans',
@@ -11,10 +12,14 @@ import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
 })
 export class PlansComponent {
 
-  plansList$: Observable<PlanList>
+  currentPlans$: Observable<PlanDefinition[]>
+  upcomingPlans$: Observable<PlanDefinition[]>
+  archivedPlans$: Observable<PlanDefinition[]>
 
-  constructor(private plansApi: PlansApi, private dialog: MatDialog) {
-    this.plansList$ = this.plansApi.getAll()
+  constructor(private plansApi: PlanDefinitionsApi, private dialog: MatDialog) {
+    this.currentPlans$ = this.plansApi.getCurrentPlans()
+    this.upcomingPlans$ = this.plansApi.getUpcomingPlans()
+    this.archivedPlans$ = this.plansApi.getArchivedPlans()
   }
 
   onPlanSelect() {
