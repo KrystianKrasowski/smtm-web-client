@@ -1,22 +1,22 @@
-<button mat-fab color="accent" class="fab" (click)="openNewPlanForm()">
+<button mat-fab color="accent" class="fab" (click)="openPlanForm()">
     <mat-icon>add</mat-icon>
 </button>
 
 <mat-action-list>
     <div mat-subheader>Current</div>
-    <mat-list-item *ngFor="let entry of currentPlans$ | async" (click)="onPlanSelect(entry)">
+    <mat-list-item *ngFor="let entry of currentPlans$ | async" (click)="openPlanForm(entry)">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
     <div mat-subheader>Upcoming</div>
-    <mat-list-item *ngFor="let entry of upcomingPlans$ | async" (click)="onPlanSelect(entry)">
+    <mat-list-item *ngFor="let entry of upcomingPlans$ | async" (click)="openPlanForm(entry)">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
     <div mat-subheader>Archived</div>
-    <mat-list-item *ngFor="let entry of archivedPlans$ | async" (click)="onPlanSelect(entry)">
+    <mat-list-item *ngFor="let entry of archivedPlans$ | async" (click)="openPlanForm(entry)">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>

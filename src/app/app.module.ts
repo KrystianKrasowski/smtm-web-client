@@ -21,7 +21,6 @@ import { CategoriesComponent } from './categories/categories.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PlansComponent } from './plans/plans.component';
-import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import {PlanFormComponent} from "./plans/plan-form/plan-form.component";
 
@@ -33,7 +32,6 @@ import {PlanFormComponent} from "./plans/plan-form/plan-form.component";
     ConfirmDialogComponent,
     PlansComponent,
     PlanFormComponent,
-    NewPlanFormComponent
   ],
   imports: [
     BrowserModule,

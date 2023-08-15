@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Category} from 'src/app/api/categories.api';
-import {Entry, NewPlanRequest, Plan, PlansApi} from 'src/app/api/plans.api';
+import {Entry, Plan, PlanRequest, PlansApi} from 'src/app/api/plans.api';
 import {
   ApiProblem,
   ConstraintViolation,
@@ -49,20 +49,6 @@ export class PlanFormComponent implements OnInit {
     this.initialize()
   }
 
-  createEntry(entry?: Entry): FormGroup {
-    const categoryControl = this.formBuilder.control<Category | null>(null)
-    categoryControl.valueChanges.subscribe(_ => this.updateSelectedCategories())
-    if (entry) {
-      const category = this.allCategories.find(cat => cat.id == entry.category.id)
-      categoryControl.setValue(category!!)
-    }
-
-    return this.formBuilder.group({
-      category: categoryControl,
-      value: entry?.value?.amount ?? ''
-    })
-  }
-
   getEntries(): FormArray {
     return this.planForm.get('entries') as FormArray
   }
@@ -103,9 +89,15 @@ export class PlanFormComponent implements OnInit {
   }
 
   submit() {
-    this.plansApi
-      .post(this.createNewPlanRequest())
-      .subscribe(result => this.handleSubmitResult(result))
+    if (this.data.planDefinition) {
+      this.plansApi
+        .put(this.data.planDefinition._links['self'].href, this.createPlanRequest())
+        .subscribe(result => this.handleSubmitResult(result))
+    } else {
+      this.plansApi
+        .post(this.createPlanRequest())
+        .subscribe(result => this.handleSubmitResult(result))
+    }
   }
 
   getNameViolation(): string | undefined {
@@ -135,6 +127,20 @@ export class PlanFormComponent implements OnInit {
         this.allCategories = categories
         this.fetchAndApplyPlan()
       })
+  }
+
+  private createEntry(entry?: Entry): FormGroup {
+    const categoryControl = this.formBuilder.control<Category | null>(null)
+    categoryControl.valueChanges.subscribe(_ => this.updateSelectedCategories())
+    if (entry) {
+      const category = this.allCategories.find(cat => cat.id == entry.category.id)
+      categoryControl.setValue(category!!)
+    }
+
+    return this.formBuilder.group({
+      category: categoryControl,
+      value: entry?.value?.amount ?? ''
+    })
   }
 
   private fetchAndApplyPlan() {
@@ -178,8 +184,9 @@ export class PlanFormComponent implements OnInit {
     }
   }
 
-  private createNewPlanRequest(): NewPlanRequest {
-    const request: NewPlanRequest = {
+  private createPlanRequest(): PlanRequest {
+    return {
+      id: this.data.planDefinition?.id,
       name: this.planForm.value['name'],
       period: {
         start: this.planForm.value['period']['start'],
@@ -189,11 +196,10 @@ export class PlanFormComponent implements OnInit {
         .map((entry: any) => {
           return {
             category: entry['category']['id'],
-            value: Money.fromDecimal(entry['value'], 'PLN')
+            value: Money.fromInteger(entry['value'], 'PLN')
           }
         })
     }
-    return request
   }
 
   private handleSubmitResult(result: Plan | ConstraintViolationsProblem | ApiProblem) {
