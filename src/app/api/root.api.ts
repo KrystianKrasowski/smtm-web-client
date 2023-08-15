@@ -7,10 +7,10 @@ import { VERSION_1_JSON } from "./media-types";
 type RootResponse = HalCollection<HalResource>
 
 export type SmtmResourceName = 'categories'
-    | 'wallets' 
-    | 'plans' 
-    | 'current-plan-definitions' 
-    | 'upcoming-plan-definitions' 
+    | 'wallets'
+    | 'plans'
+    | 'current-plan-definitions'
+    | 'upcoming-plan-definitions'
     | 'archived-plan-definitions'
 
 @Injectable({
@@ -24,7 +24,7 @@ export class RootApi {
         })
     };
 
-    private apiRoot = "http://localhost:8081/"
+    private apiRoot = "http://localhost:8080/"
 
     constructor(private http: HttpClient) { }
 

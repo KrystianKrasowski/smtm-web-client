@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>New plan</h2>
+<mat-dialog-content class="mat-typograpghy">
+    <p id="summary">Summary: {{ sum }}</p>
+    <hr>
+    <form [formGroup]="planForm">
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput type="text" formControlName="name">
+                <mat-error *ngIf="getNameViolation()">{{ getNameViolation() }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Period</mat-label>
+                <mat-date-range-input [formGroup]="getPeriodFormGroup()" [rangePicker]="picker">
+                    <input matStartDate formControlName="start" placeholder="Start date">
+                    <input matEndDate formControlName="end" placeholder="End date">
+                </mat-date-range-input>
+                <mat-error *ngIf="getPeriodStartViolation()">{{ getPeriodStartViolation() }}</mat-error>
+                <mat-error *ngIf="getPeriodEndViolation()">{{ getPeriodEndViolation() }}</mat-error>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+        <hr>
+        <div formArrayName="entries">
+            <div *ngFor="let group of getEntries().controls; let i = index" [formGroupName]="i">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="getCategoryName">
+                    <mat-option *ngFor="let category of getAvailableCategories()" [value]="category">
+                        {{category.name}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-form-field appearance="outline">
+                    <mat-label>Category</mat-label>
+                    <input matInput type="text" [matAutocomplete]="auto" formControlName="category">
+                    <mat-error *ngIf="getCategoryViolation(i)">{{ getCategoryViolation(i) }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Value</mat-label>
+                    <input matInput type="number" (blur)="sumUp()" formControlName="value">
+                    <mat-error *ngIf="getValueViolation(i)">{{ getValueViolation(i) }}</mat-error>
+                </mat-form-field>
+                <button mat-icon-button (click)="deleteEntry(i)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="addEntry()">Add entry</button>
+    <button mat-button color="primary" (click)="submit()">Save</button>
+</mat-dialog-actions>

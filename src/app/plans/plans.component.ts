@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
-import { PlanList, PlansApi } from '../api/plans.api';
-import { NewPlanFormComponent } from './new-plan-form/new-plan-form.component';
-import { PlanDefinition, PlanDefinitionsApi } from '../api/plan-definitions.api';
+import {Component} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {Observable} from 'rxjs';
+import {NewPlanFormComponent} from './new-plan-form/new-plan-form.component';
+import {PlanDefinition, PlanDefinitionsApi} from '../api/plan-definitions.api';
+import {PlanFormComponent} from "./plan-form/plan-form.component";
 
 @Component({
   selector: 'app-plans',
@@ -22,8 +22,16 @@ export class PlansComponent {
     this.archivedPlans$ = this.plansApi.getArchivedPlans()
   }
 
-  onPlanSelect() {
-    console.log('Plan selected!')
+  onPlanSelect(plan: PlanDefinition) {
+    this.dialog
+      .open(PlanFormComponent, {
+        width: '1000px',
+        data: {
+          planDefinition: plan
+        }
+      })
+      .afterClosed()
+      .subscribe(result => console.log(result))
   }
 
   openNewPlanForm() {

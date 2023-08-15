@@ -4,19 +4,19 @@
 
 <mat-action-list>
     <div mat-subheader>Current</div>
-    <mat-list-item *ngFor="let entry of currentPlans$ | async">
+    <mat-list-item *ngFor="let entry of currentPlans$ | async" (click)="onPlanSelect(entry)">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
     <div mat-subheader>Upcoming</div>
-    <mat-list-item *ngFor="let entry of upcomingPlans$ | async">
+    <mat-list-item *ngFor="let entry of upcomingPlans$ | async" (click)="onPlanSelect(entry)">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>
     </mat-list-item>
     <div mat-subheader>Archived</div>
-    <mat-list-item *ngFor="let entry of archivedPlans$ | async">
+    <mat-list-item *ngFor="let entry of archivedPlans$ | async" (click)="onPlanSelect(entry)">
         <mat-icon matListItemIcon>format_list_bulletedf</mat-icon>
         <div matListItemTitle>{{ entry.name }}</div>
         <div matListItemLine>{{ entry.period.start | date }} - {{ entry.period.end | date }}</div>

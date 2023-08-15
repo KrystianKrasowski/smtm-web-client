@@ -23,6 +23,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { PlansComponent } from './plans/plans.component';
 import { NewPlanFormComponent } from './plans/new-plan-form/new-plan-form.component';
 import { MatNativeDateModule } from '@angular/material/core';
+import {PlanFormComponent} from "./plans/plan-form/plan-form.component";
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     CategoriesComponent,
     ConfirmDialogComponent,
     PlansComponent,
+    PlanFormComponent,
     NewPlanFormComponent
   ],
   imports: [
