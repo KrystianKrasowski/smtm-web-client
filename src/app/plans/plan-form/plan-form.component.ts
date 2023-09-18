@@ -1,18 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { Category } from 'src/app/api/categories.api';
-import { NewPlanRequest, Plan, PlansApi } from 'src/app/api/plans.api';
-import { ApiProblem, ConstraintViolation, ConstraintViolationsProblem, isApiProblem, isConstraintViolation } from 'src/app/api/problem';
-import { CategoriesService } from 'src/app/categories.service';
-import { Money } from 'ts-money';
+import {Component, Inject, OnInit} from '@angular/core';
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Category} from 'src/app/api/categories.api';
+import {Entry, Plan, PlansApi} from 'src/app/api/plans.api';
+import {
+  ApiProblem,
+  ConstraintViolation,
+  ConstraintViolationsProblem,
+  isApiProblem,
+  isConstraintViolation
+} from 'src/app/api/problem';
+import {CategoriesService} from 'src/app/categories.service';
+import {Money} from 'ts-money';
+import {PlanDefinition} from "../../api/plan-definitions.api";
 
 @Component({
   selector: 'app-new-plan-form',
-  templateUrl: './new-plan-form.component.html',
-  styleUrls: ['./new-plan-form.component.css']
+  templateUrl: './plan-form.component.html',
+  styleUrls: ['./plan-form.component.css']
 })
-export class NewPlanFormComponent implements OnInit {
+export class PlanFormComponent implements OnInit {
 
   planForm: FormGroup = this.formBuilder.group({
     name: this.formBuilder.control(''),
@@ -30,25 +37,16 @@ export class NewPlanFormComponent implements OnInit {
   sum: number = 0
 
   constructor(
-    public dialogRef: MatDialogRef<NewPlanFormComponent>,
-    private formBuilder: FormBuilder, 
-    private categoryService: CategoriesService,
-    private plansApi: PlansApi
-  ) { }
-
-  ngOnInit(): void {
-    this.categoryService.getCategories()
-      .subscribe(categories => this.allCategories = categories)
+    public dialogRef: MatDialogRef<PlanFormComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: { planDefinition?: PlanDefinition },
+    private formBuilder: FormBuilder,
+    private categoriesApi: CategoriesService,
+    private plansApi: PlansApi,
+  ) {
   }
 
-  createEntry(): FormGroup {
-    const categoryControl = this.formBuilder.nonNullable.control('category')
-    categoryControl.valueChanges.subscribe(_ => this.updateSelectedCategories())
-
-    return this.formBuilder.group({
-      category: categoryControl,
-      value: ''
-    })
+  ngOnInit(): void {
+    this.initialize()
   }
 
   getEntries(): FormArray {
@@ -59,9 +57,9 @@ export class NewPlanFormComponent implements OnInit {
     return this.planForm.get('period') as FormGroup
   }
 
-  addEntry(): void {
+  addEntry(entry?: Entry): void {
     const entries = this.planForm.get('entries') as FormArray
-    entries.push(this.createEntry())
+    entries.push(this.createEntry(entry))
   }
 
   deleteEntry(index: number) {
@@ -70,7 +68,11 @@ export class NewPlanFormComponent implements OnInit {
   }
 
   getCategoryName(category: Category): string {
-    return category.name
+    if (category != null) {
+      return category.name
+    } else {
+      return ''
+    }
   }
 
   getAvailableCategories(): Category[] {
@@ -87,9 +89,15 @@ export class NewPlanFormComponent implements OnInit {
   }
 
   submit() {
-    this.plansApi
-      .post(this.createNewPlanRequest())
-      .subscribe(result => this.handleSubmitResult(result))
+    if (this.data.planDefinition?._links?.self.href) {
+      this.plansApi
+        .put(this.data.planDefinition._links.self.href, this.createPlanRequest())
+        .subscribe(result => this.handleSubmitResult(result))
+    } else {
+      this.plansApi
+        .post(this.createPlanRequest())
+        .subscribe(result => this.handleSubmitResult(result))
+    }
   }
 
   getNameViolation(): string | undefined {
@@ -112,13 +120,55 @@ export class NewPlanFormComponent implements OnInit {
     return this.planForm.getError('api', 'entries.' + index + '.value')
   }
 
-  private updateSelectedCategories() {
-    const categories = this.getEntries().controls
-      .map(group => group.get('category') as FormControl)
-      .map(control => control.value as Category)
-      .filter(category => category.id != undefined)
+  private initialize() {
+    this.categoriesApi
+      .getCategories()
+      .subscribe(categories => {
+        this.allCategories = categories
+        this.fetchAndApplyPlan()
+      })
+  }
 
-    this.selectedCategories = categories
+  private createEntry(entry?: Entry): FormGroup {
+    const categoryControl = this.formBuilder.control<Category | null>(null)
+    categoryControl.valueChanges.subscribe(_ => this.updateSelectedCategories())
+    if (entry) {
+      const category = this.allCategories.find(cat => cat.id == entry.category.id)
+      categoryControl.setValue(category!!)
+    }
+
+    return this.formBuilder.group({
+      category: categoryControl,
+      value: entry?.value?.amount ?? ''
+    })
+  }
+
+  private fetchAndApplyPlan() {
+    if (this.data.planDefinition?._links?.self.href) {
+      this.plansApi
+        .get(this.data.planDefinition?._links?.self.href)
+        .subscribe(plan => this.applyPlan(plan))
+    }
+  }
+
+  private applyPlan(plan: Plan) {
+    this.planForm.get('name')?.setValue(plan.name)
+    this.planForm.get('period')?.get('start')?.setValue(plan.period.start)
+    this.planForm.get('period')?.get('end')?.setValue(plan.period.end)
+
+    for (const entry of plan.entries) {
+      this.addEntry(entry)
+    }
+
+    this.updateSelectedCategories()
+  }
+
+  private updateSelectedCategories() {
+    this.selectedCategories = this.getEntries().controls
+      .map(group => group.get('category') as FormControl)
+      .map(control => (control.value as Category))
+      .filter(category => category != null)
+      .filter(category => category.id != undefined)
   }
 
   private deselectCategoryAtIndex(index: number) {
@@ -127,15 +177,16 @@ export class NewPlanFormComponent implements OnInit {
     if (value) {
       const category = value.category as Category
       const i = this.selectedCategories.indexOf(category)
-      
+
       if (i >= 0) {
         delete this.selectedCategories[i]
       }
     }
   }
 
-  private createNewPlanRequest(): NewPlanRequest {
-    const request: NewPlanRequest = {
+  private createPlanRequest(): Plan {
+    return {
+      id: this.data.planDefinition?.id,
       name: this.planForm.value['name'],
       period: {
         start: this.planForm.value['period']['start'],
@@ -144,12 +195,11 @@ export class NewPlanFormComponent implements OnInit {
       entries: this.planForm.value['entries']
         .map((entry: any) => {
           return {
-            category: entry['category']['id'],
+            category: entry['category'],
             value: Money.fromDecimal(entry['value'], 'PLN')
           }
         })
     }
-    return request
   }
 
   private handleSubmitResult(result: Plan | ConstraintViolationsProblem | ApiProblem) {
