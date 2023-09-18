@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Category} from 'src/app/api/categories.api';
-import {Entry, Plan, PlanRequest, PlansApi} from 'src/app/api/plans.api';
+import {Entry, Plan, PlansApi} from 'src/app/api/plans.api';
 import {
   ApiProblem,
   ConstraintViolation,
@@ -89,9 +89,9 @@ export class PlanFormComponent implements OnInit {
   }
 
   submit() {
-    if (this.data.planDefinition) {
+    if (this.data.planDefinition?._links?.self.href) {
       this.plansApi
-        .put(this.data.planDefinition._links['self'].href, this.createPlanRequest())
+        .put(this.data.planDefinition._links.self.href, this.createPlanRequest())
         .subscribe(result => this.handleSubmitResult(result))
     } else {
       this.plansApi
@@ -144,9 +144,9 @@ export class PlanFormComponent implements OnInit {
   }
 
   private fetchAndApplyPlan() {
-    if (this.data.planDefinition) {
+    if (this.data.planDefinition?._links?.self.href) {
       this.plansApi
-        .get(this.data.planDefinition._links['self'].href)
+        .get(this.data.planDefinition?._links?.self.href)
         .subscribe(plan => this.applyPlan(plan))
     }
   }
@@ -184,7 +184,7 @@ export class PlanFormComponent implements OnInit {
     }
   }
 
-  private createPlanRequest(): PlanRequest {
+  private createPlanRequest(): Plan {
     return {
       id: this.data.planDefinition?.id,
       name: this.planForm.value['name'],
@@ -195,8 +195,8 @@ export class PlanFormComponent implements OnInit {
       entries: this.planForm.value['entries']
         .map((entry: any) => {
           return {
-            category: entry['category']['id'],
-            value: Money.fromInteger(entry['value'], 'PLN')
+            category: entry['category'],
+            value: Money.fromDecimal(entry['value'], 'PLN')
           }
         })
     }

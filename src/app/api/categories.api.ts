@@ -35,7 +35,7 @@ export class CategoriesApi {
                 'Accept': VERSION_1_JSON
             }
         }
-    
+
         return this.rootApi.getUrlFor('categories')
             .pipe(
                 mergeMap((url) => this.http.post<Category>(url, category, options)),
@@ -50,7 +50,7 @@ export class CategoriesApi {
             }
         }
 
-        return this.http.put<Category>(category._links.self.href, category, options)
+        return this.http.put<Category>(category._links!.self.href, category, options)
             .pipe(
                 catchError((response) => of(this.handleErrorResponse(response)))
             )
@@ -62,8 +62,8 @@ export class CategoriesApi {
                 'Content-Type': VERSION_1_JSON
             }
         }
-        
-        return this.http.delete<void>(category._links.self.href, options)
+
+        return this.http.delete<void>(category._links!.self.href, options)
     }
 
     private handleErrorResponse(response: HttpErrorResponse): ConstraintViolationsProblem {

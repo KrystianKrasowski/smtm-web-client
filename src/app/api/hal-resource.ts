@@ -1,5 +1,5 @@
 export interface HalResource {
-    _links: {
+    _links?: {
         self: {
             href: string
         },

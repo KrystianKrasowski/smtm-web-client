@@ -1,4 +1,4 @@
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {catchError, map, mergeMap, Observable, of} from "rxjs";
 import {Money} from "ts-money";
@@ -43,14 +43,11 @@ export class PlansApi {
   }
 
   get(planUrl: string): Observable<Plan> {
-    return this.http.get<HttpResponse<any>>(planUrl, {
+    return this.http.get<Plan>(planUrl, {
       'headers': {
         'Accept': VERSION_1_JSON
       }
     })
-      .pipe(
-        map(response => createPlan(response))
-      )
   }
 
   post(plan: PlanRequest): Observable<Plan | ConstraintViolationsProblem | ApiProblem> {
@@ -108,7 +105,7 @@ export interface PlanRequest {
 
 export interface Plan extends HalResource {
 
-  id: number,
+  id?: number,
   name: string,
   period: {
     start: Date,
@@ -121,36 +118,4 @@ export interface Entry {
 
   category: Category,
   value: Money
-}
-
-function createPlan(object: any): Plan {
-  return {
-    _links: {
-      self: {
-        href: object['_links']['self']['href']
-      }
-    },
-    id: object['id'],
-    name: object['name'],
-    period: {
-      start: object['period']['start'],
-      end: object['period']['end']
-    },
-    entries: object['entries'].map((entry: any) => createEntry(entry))
-  }
-}
-
-function createEntry(object: any): Entry {
-  return {
-    category: {
-      _links: {
-        self: {
-          href: object['category']['_links']['self']['href']
-        }
-      },
-      id: object['category']['id'],
-      name: object['category']['name']
-    },
-    value: Money.fromDecimal(object['value']['amount'], object['value']['currency'])
-  }
 }
