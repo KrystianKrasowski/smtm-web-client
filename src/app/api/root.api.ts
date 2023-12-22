@@ -6,7 +6,7 @@ import { VERSION_1_JSON } from "./media-types";
 
 type RootResponse = HalCollection<HalResource>
 
-export type SmtmResourceName = 'categories'
+export type SmtmResourceName = 'labels'
     | 'wallets'
     | 'plans'
     | 'current-plan-definitions'

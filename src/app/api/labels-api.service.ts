@@ -6,29 +6,29 @@ import { RootApi } from "./root.api";
 import { Injectable } from "@angular/core";
 import { VERSION_1_JSON } from "./media-types";
 
-type CategoryListResponse = HalCollection<Category>;
+type LabelListResponse = HalCollection<Label>;
 
 @Injectable({
     providedIn: 'root'
 })
-export class CategoriesApi {
+export class LabelsApi {
 
     constructor(private rootApi: RootApi, private http: HttpClient) {}
 
-    getAll(): Observable<Category[]> {
+    getAll(): Observable<Label[]> {
         const options = {
             'headers': {
                 'Accept': VERSION_1_JSON
             }
         }
-        return this.rootApi.getUrlFor('categories')
+        return this.rootApi.getUrlFor('labels')
             .pipe(
-                mergeMap((url) => this.http.get<CategoryListResponse>(url, options)),
-                map((response) => response._embedded['categories'])
+                mergeMap((url) => this.http.get<LabelListResponse>(url, options)),
+                map((response) => response._embedded['labels'])
             )
     }
 
-    post(category: NewCategory): Observable<Category | ConstraintViolationsProblem> {
+    post(label: Label): Observable<Label | ConstraintViolationsProblem> {
         const options = {
             'headers': {
                 'Content-Type': VERSION_1_JSON,
@@ -36,34 +36,34 @@ export class CategoriesApi {
             }
         }
 
-        return this.rootApi.getUrlFor('categories')
+        return this.rootApi.getUrlFor('labels')
             .pipe(
-                mergeMap((url) => this.http.post<Category>(url, category, options)),
+                mergeMap((url) => this.http.post<Label>(url, label, options)),
                 catchError((response) => of(this.handleErrorResponse(response))),
             )
     }
 
-    put(category: Category): Observable<Category | ConstraintViolationsProblem> {
+    put(label: Label): Observable<Label | ConstraintViolationsProblem> {
         const options = {
             'headers': {
                 'Content-Type': VERSION_1_JSON
             }
         }
 
-        return this.http.put<Category>(category._links!.self.href, category, options)
+        return this.http.put<Label>(label._links!.self.href, label, options)
             .pipe(
                 catchError((response) => of(this.handleErrorResponse(response)))
             )
     }
 
-    delete(category: Category): Observable<void> {
+    delete(label: Label): Observable<void> {
         const options = {
             'headers': {
                 'Content-Type': VERSION_1_JSON
             }
         }
 
-        return this.http.delete<void>(category._links!.self.href, options)
+        return this.http.delete<void>(label._links!.self.href, options)
     }
 
     private handleErrorResponse(response: HttpErrorResponse): ConstraintViolationsProblem {
@@ -75,11 +75,7 @@ export class CategoriesApi {
     }
 }
 
-export interface Category extends HalResource {
-    id: number,
-    name: string
-}
-
-export interface NewCategory {
+export interface Label extends HalResource {
+    id?: number,
     name: string
 }

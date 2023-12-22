@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { Category } from '../api/categories.api';
+import { Label } from '../api/labels-api.service';
 import { ConstraintViolationsProblem, isConstraintViolation } from '../api/problem';
-import { CategoriesService } from '../categories.service';
+import { LabelsService } from '../labels.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -16,15 +16,15 @@ export class CategoriesComponent {
 
   name = new FormControl('')
 
-  selectedCategory?: Category;
+  selectedCategory?: Label;
 
-  categoryList: Observable<Category[]>
+  categoryList: Observable<Label[]>
 
-  constructor(private dialog: MatDialog, private categories: CategoriesService) {
-    this.categoryList = categories.getCategories()
+  constructor(private dialog: MatDialog, private labels: LabelsService) {
+    this.categoryList = labels.getLabels()
   }
 
-  onCategoryTap(category: Category): void {
+  onCategoryTap(category: Label): void {
     this.selectedCategory = this.selectedCategory != category
       ? category
       : undefined
@@ -34,7 +34,7 @@ export class CategoriesComponent {
 
   onCategorySave(): void {
     const name = this.name.value ?? ''
-    this.categories
+    this.labels
       .save(name, this.selectedCategory)
       .subscribe((result) => this.handleSaveResult(result))
   }
@@ -49,10 +49,10 @@ export class CategoriesComponent {
   }
 
   isCategorySelected(): boolean {
-    return this.selectedCategory != undefined && this.selectedCategory != null;
+    return this.selectedCategory != undefined;
   }
 
-  private handleSaveResult(result: Category | ConstraintViolationsProblem) {
+  private handleSaveResult(result: Label | ConstraintViolationsProblem) {
     if (isConstraintViolation(result)) {
       this.name.setErrors({
         name: result.violations.find((v) => v.path === 'name')?.message
@@ -62,12 +62,12 @@ export class CategoriesComponent {
 
   private deleteSelectedCategoryIf(condition: boolean) {
     if (condition && this.selectedCategory) {
-      this.categories
+      this.labels
         .delete(this.selectedCategory)
         .subscribe(() => {
           this.selectedCategory = undefined
           this.name.setValue('')
-          this.categoryList = this.categories.getCategories()
+          this.categoryList = this.labels.getLabels()
         })
     }
   }

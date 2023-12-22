@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Category} from 'src/app/api/categories.api';
+import {Label} from 'src/app/api/labels-api.service';
 import {Entry, Plan, PlansApi} from 'src/app/api/plans.api';
 import {
   ApiProblem,
@@ -10,7 +10,7 @@ import {
   isApiProblem,
   isConstraintViolation
 } from 'src/app/api/problem';
-import {CategoriesService} from 'src/app/categories.service';
+import {LabelsService} from 'src/app/labels.service';
 import {Money} from 'ts-money';
 import {PlanDefinition} from "../../api/plan-definitions.api";
 
@@ -30,9 +30,9 @@ export class PlanFormComponent implements OnInit {
     entries: this.formBuilder.array([])
   })
 
-  allCategories: Category[] = []
+  allCategories: Label[] = []
 
-  selectedCategories: Category[] = []
+  selectedCategories: Label[] = []
 
   sum: number = 0
 
@@ -40,7 +40,7 @@ export class PlanFormComponent implements OnInit {
     public dialogRef: MatDialogRef<PlanFormComponent>,
     @Inject(MAT_DIALOG_DATA) private data: { planDefinition?: PlanDefinition },
     private formBuilder: FormBuilder,
-    private categoriesApi: CategoriesService,
+    private categoriesApi: LabelsService,
     private plansApi: PlansApi,
   ) {
   }
@@ -67,7 +67,7 @@ export class PlanFormComponent implements OnInit {
     this.getEntries().removeAt(index)
   }
 
-  getCategoryName(category: Category): string {
+  getCategoryName(category: Label): string {
     if (category != null) {
       return category.name
     } else {
@@ -75,7 +75,7 @@ export class PlanFormComponent implements OnInit {
     }
   }
 
-  getAvailableCategories(): Category[] {
+  getAvailableCategories(): Label[] {
     return this.allCategories
       .filter(category => !this.selectedCategories.includes(category))
   }
@@ -122,7 +122,7 @@ export class PlanFormComponent implements OnInit {
 
   private initialize() {
     this.categoriesApi
-      .getCategories()
+      .getLabels()
       .subscribe(categories => {
         this.allCategories = categories
         this.fetchAndApplyPlan()
@@ -130,7 +130,7 @@ export class PlanFormComponent implements OnInit {
   }
 
   private createEntry(entry?: Entry): FormGroup {
-    const categoryControl = this.formBuilder.control<Category | null>(null)
+    const categoryControl = this.formBuilder.control<Label | null>(null)
     categoryControl.valueChanges.subscribe(_ => this.updateSelectedCategories())
     if (entry) {
       const category = this.allCategories.find(cat => cat.id == entry.category.id)
@@ -166,7 +166,7 @@ export class PlanFormComponent implements OnInit {
   private updateSelectedCategories() {
     this.selectedCategories = this.getEntries().controls
       .map(group => group.get('category') as FormControl)
-      .map(control => (control.value as Category))
+      .map(control => (control.value as Label))
       .filter(category => category != null)
       .filter(category => category.id != undefined)
   }
@@ -175,7 +175,7 @@ export class PlanFormComponent implements OnInit {
     const value = this.getEntries().at(index)?.value
 
     if (value) {
-      const category = value.category as Category
+      const category = value.category as Label
       const i = this.selectedCategories.indexOf(category)
 
       if (i >= 0) {

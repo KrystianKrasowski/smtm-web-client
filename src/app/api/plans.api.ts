@@ -11,7 +11,7 @@ import {
 } from "./problem";
 import {RootApi} from "./root.api";
 import {VERSION_1_JSON} from "./media-types";
-import {Category} from "./categories.api";
+import {Label} from "./labels-api.service";
 
 type PlanListResponse = HalCollection<PlanListEntry>
 
@@ -116,6 +116,6 @@ export interface Plan extends HalResource {
 
 export interface Entry {
 
-  category: Category,
+  category: Label,
   value: Money
 }
